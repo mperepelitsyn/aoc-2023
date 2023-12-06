@@ -14,10 +14,17 @@ fn part1(input: &str) -> i64 {
 fn part2(input: &str) -> i64 {
     let lines: Vec<_> = input.lines().collect();
     let (time, dist) = (get_digit_concat(lines[0]), get_digit_concat(lines[1]));
-    (1..time)
-        .map(|t| t * (time - t))
-        .filter(|&s| s > dist)
-        .count() as _
+
+    let (mut lo, mut hi) = (1, time / 2);
+    while lo < hi {
+        let mid = lo + (hi - lo) / 2;
+        if mid * (time - mid) > dist {
+            hi = mid
+        } else {
+            lo = mid + 1
+        }
+    }
+    time + 1 - lo * 2
 }
 
 fn get_digits(line: &str) -> impl Iterator<Item = i64> + '_ {
