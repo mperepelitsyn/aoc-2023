@@ -10,11 +10,11 @@ fn part2(input: &str) -> i64 {
     let start_nodes = map.keys().filter(|node| node.ends_with('A'));
     start_nodes
         .map(|node| count_steps(node, moves, &map, |node| node.ends_with('Z')) as i64)
-        .fold(1, |acc, steps| num::integer::lcm(acc, steps))
+        .fold(1, num::integer::lcm)
 }
 
 fn parse_input(input: &str) -> (&str, HashMap<&str, (&str, &str)>) {
-    let moves = input.lines().nth(0).unwrap();
+    let moves = input.lines().next().unwrap();
     let mut map = HashMap::new();
     input.lines().skip(2).for_each(|line| {
         let (root, rest) = line.split_once(" = ").unwrap();
