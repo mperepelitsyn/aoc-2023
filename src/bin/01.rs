@@ -1,29 +1,21 @@
 fn part1(input: &str) -> u32 {
-    input
-        .lines()
-        .map(|line| {
-            let first = (0..line.len())
-                .find_map(|i| get_digit(&line[i..], false))
-                .unwrap();
-            let last = (0..line.len())
-                .rev()
-                .find_map(|i| get_digit(&line[i..], false))
-                .unwrap();
-            first * 10 + last
-        })
-        .sum()
+    solve(input, false)
 }
 
 fn part2(input: &str) -> u32 {
+    solve(input, true)
+}
+
+fn solve(input: &str, parse_words: bool) -> u32 {
     input
         .lines()
         .map(|line| {
             let first = (0..line.len())
-                .find_map(|i| get_digit(&line[i..], true))
+                .find_map(|i| get_digit(&line[i..], parse_words))
                 .unwrap();
             let last = (0..line.len())
                 .rev()
-                .find_map(|i| get_digit(&line[i..], true))
+                .find_map(|i| get_digit(&line[i..], parse_words))
                 .unwrap();
             first * 10 + last
         })
