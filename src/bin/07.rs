@@ -5,6 +5,7 @@ fn part1(input: &str) -> i32 {
 fn part2(input: &str) -> i32 {
     solve(input, "J23456789TQKA", true)
 }
+
 fn solve(input: &str, ordering: &str, use_joker: bool) -> i32 {
     let mut ord = [0; 128];
     ordering
