@@ -1,68 +1,39 @@
 use std::fs::read_to_string;
 
-fn part1(input: &str) -> usize {
+fn part1(input: &str) -> i64 {
     solve(input, 2)
 }
 
-fn part2(input: &str, expand: usize) -> usize {
-    solve(input, expand)
+fn part2(input: &str, dist: i32) -> i64 {
+    solve(input, dist)
 }
 
-fn solve(input: &str, expand: usize) -> usize {
+fn solve(input: &str, dist: i32) -> i64 {
     let grid: Vec<_> = input
         .lines()
         .map(|line| line.bytes().collect::<Vec<_>>())
         .collect();
-    let grid = expand_rows(transpose(expand_rows(grid)));
-    let gals = find_galaxies(&grid);
+    let (rows, cols) = get_expansion_coords(&grid);
+    let gals = expand_galaxies(find_galaxies(&grid), &rows, &cols, dist);
 
     (0..gals.len() - 1)
         .flat_map(|i| (i + 1..gals.len()).map(move |j| (i, j)))
-        .map(|(i, j)| {
-            let (from, to) = sort_coords(gals[i].0, gals[j].0);
-            let i_dir: usize = (from..to)
-                .map(|k| {
-                    if grid[k][gals[i].1] == b'+' {
-                        expand
-                    } else {
-                        1
-                    }
-                })
-                .sum();
-
-            let (from, to) = sort_coords(gals[i].1, gals[j].1);
-            let j_dir: usize = (from..to)
-                .map(|k| {
-                    if grid[gals[i].0][k] == b'+' {
-                        expand
-                    } else {
-                        1
-                    }
-                })
-                .sum();
-
-            i_dir + j_dir
-        })
-        .sum()
+        .map(|(i, j)| gals[i].0.abs_diff(gals[j].0) + gals[i].1.abs_diff(gals[j].1))
+        .sum::<usize>() as _
 }
 
-fn transpose(grid: Vec<Vec<u8>>) -> Vec<Vec<u8>> {
-    let mut ret = vec![vec![0; grid.len()]; grid[0].len()];
-    for (i, row) in grid.into_iter().enumerate() {
-        for (j, c) in row.into_iter().enumerate() {
-            ret[j][i] = c;
-        }
-    }
-    ret
-}
+fn get_expansion_coords(grid: &[Vec<u8>]) -> (Vec<usize>, Vec<usize>) {
+    let rows = grid
+        .iter()
+        .enumerate()
+        .filter(|(_, row)| row.iter().all(|&b| b == b'.'))
+        .map(|(i, _)| i)
+        .collect();
+    let cols = (0..grid[0].len())
+        .filter(|&j| (0..grid.len()).all(|i| grid[i][j] == b'.'))
+        .collect();
 
-fn expand_rows(mut grid: Vec<Vec<u8>>) -> Vec<Vec<u8>> {
-    for row in grid.iter_mut() {
-        if row.iter().all(|&b| b == b'.' || b == b'+') {
-            row.iter_mut().for_each(|b| *b = b'+')
-        }
-    }
-    grid
+    (rows, cols)
 }
 
 fn find_galaxies(grid: &[Vec<u8>]) -> Vec<(usize, usize)> {
@@ -77,12 +48,19 @@ fn find_galaxies(grid: &[Vec<u8>]) -> Vec<(usize, usize)> {
         .collect()
 }
 
-fn sort_coords(i: usize, j: usize) -> (usize, usize) {
-    if i < j {
-        (i, j)
-    } else {
-        (j, i)
-    }
+fn expand_galaxies(
+    mut gals: Vec<(usize, usize)>,
+    rows: &[usize],
+    cols: &[usize],
+    dist: i32,
+) -> Vec<(usize, usize)> {
+    gals.iter_mut().for_each(|(i, j)| {
+        [(i, rows), (j, cols)].into_iter().for_each(|(p, coords)| {
+            let times = coords.binary_search(p).unwrap_err();
+            *p += times * dist as usize - times;
+        });
+    });
+    gals
 }
 
 fn main() {
