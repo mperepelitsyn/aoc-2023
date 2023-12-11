@@ -20,7 +20,7 @@ fn solve(input: &str, expand: usize) -> usize {
         .flat_map(|i| (i + 1..gals.len()).map(move |j| (i, j)))
         .map(|(i, j)| {
             let (from, to) = sort_coords(gals[i].0, gals[j].0);
-            let i_dir: usize = (from + 1..=to)
+            let i_dir: usize = (from..to)
                 .map(|k| {
                     if grid[k][gals[i].1] == b'+' {
                         expand
@@ -31,7 +31,7 @@ fn solve(input: &str, expand: usize) -> usize {
                 .sum();
 
             let (from, to) = sort_coords(gals[i].1, gals[j].1);
-            let j_dir: usize = (from + 1..=to)
+            let j_dir: usize = (from..to)
                 .map(|k| {
                     if grid[gals[i].0][k] == b'+' {
                         expand
