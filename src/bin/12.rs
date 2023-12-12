@@ -1,21 +1,23 @@
-use std::{collections::HashMap, fs::read_to_string};
+use std::fs::read_to_string;
 
 fn part1(input: &str) -> i64 {
-    parse_input(input, 1)
-        .map(|(rec, ctl)| dfs(rec.as_bytes(), 0, 0, 0, &ctl, &mut HashMap::new()))
-        .sum()
+    solve(input, 1)
 }
 
 fn part2(input: &str) -> i64 {
-    parse_input(input, 5)
-        .map(|(rec, ctl)| dfs(rec.as_bytes(), 0, 0, 0, &ctl, &mut HashMap::new()))
+    solve(input, 5)
+}
+
+fn solve(input: &str, expand: usize) -> i64 {
+    parse_input(input, expand)
+        .map(|(rec, ctl)| dfs(rec.as_bytes(), 0, 0, 0, &ctl, &mut create_memo(&rec, &ctl)))
         .sum()
 }
 
-fn parse_input(input: &str, expand: usize) -> impl Iterator<Item = (String, Vec<u32>)> + '_ {
+fn parse_input(input: &str, expand: usize) -> impl Iterator<Item = (String, Vec<usize>)> + '_ {
     input.lines().map(move |line| {
         let (rec, ctl) = line.split_once(' ').unwrap();
-        let ctl = ctl.split(',').map(|s| s.parse::<u32>().unwrap());
+        let ctl = ctl.split(',').map(|s| s.parse::<usize>().unwrap());
         let mut rec = std::iter::repeat(rec)
             .take(expand)
             .collect::<Vec<_>>()
@@ -32,21 +34,19 @@ fn parse_input(input: &str, expand: usize) -> impl Iterator<Item = (String, Vec<
 fn dfs(
     rec: &[u8],
     i: usize,
-    glen: u32,
+    glen: usize,
     gcount: usize,
-    ctl: &[u32],
-    memo: &mut HashMap<(u8, u8, u8), i64>,
+    ctl: &[usize],
+    memo: &mut Vec<Vec<Vec<i64>>>,
 ) -> i64 {
-    let key = (i as u8, glen as u8, gcount as u8);
-    if let Some(&ret) = memo.get(&key) {
-        return ret;
-    }
-
     if i == rec.len() {
         if gcount == ctl.len() {
             return 1;
         }
         return 0;
+    }
+    if memo[i][glen][gcount] != -1 {
+        return memo[i][glen][gcount];
     }
 
     let mut ret = 0;
@@ -68,8 +68,12 @@ fn dfs(
             ret += dfs(rec, i + 1, 0, gcount + (glen > 0) as usize, ctl, memo)
         };
     }
-    memo.insert(key, ret);
+    memo[i][glen][gcount] = ret;
     ret
+}
+
+fn create_memo(rec: &str, ctl: &[usize]) -> Vec<Vec<Vec<i64>>> {
+    vec![vec![vec![-1; ctl.len() + 1]; *ctl.iter().max().unwrap() + 1]; rec.len()]
 }
 
 fn main() {
