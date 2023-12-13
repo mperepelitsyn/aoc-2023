@@ -66,8 +66,10 @@ fn transpose(grid: Vec<Vec<u8>>) -> Vec<Vec<u8>> {
 
 fn main() {
     let input = read_to_string("input/13.txt").unwrap();
+    let start = std::time::Instant::now();
     println!("Part 1: {}", part1(&input));
     println!("Part 2: {}", part2(&input));
+    println!("Time: {:?}", start.elapsed());
 }
 
 #[cfg(test)]

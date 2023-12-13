@@ -65,8 +65,10 @@ fn expand_galaxies(
 
 fn main() {
     let input = read_to_string("input/11.txt").unwrap();
+    let start = std::time::Instant::now();
     println!("Part 1: {}", part1(&input));
     println!("Part 2: {}", part2(&input, 1_000_000));
+    println!("Time: {:?}", start.elapsed());
 }
 
 #[cfg(test)]

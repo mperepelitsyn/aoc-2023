@@ -67,8 +67,10 @@ fn get_hand_type(hand: &str, use_joker: bool) -> i8 {
 
 fn main() {
     let input = std::fs::read_to_string("input/07.txt").unwrap();
+    let start = std::time::Instant::now();
     println!("Part 1: {}", part1(&input));
     println!("Part 2: {}", part2(&input));
+    println!("Time: {:?}", start.elapsed());
 }
 
 #[cfg(test)]

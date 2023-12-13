@@ -96,8 +96,10 @@ fn parse_input(input: &str) -> Vec<Vec<u8>> {
 
 fn main() {
     let input = std::fs::read_to_string("input/03.txt").unwrap();
+    let start = std::time::Instant::now();
     println!("Part 1: {}", part1(&input));
     println!("Part 2: {}", part2(&input));
+    println!("Time: {:?}", start.elapsed());
 }
 
 #[cfg(test)]
