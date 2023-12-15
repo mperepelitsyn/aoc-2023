@@ -1,13 +1,13 @@
 use std::fs::read_to_string;
 
 fn part1(input: &str) -> usize {
-    input.split(',').map(hash).sum()
+    input.trim().split(',').map(hash).sum()
 }
 
 fn part2(input: &str) -> usize {
     let mut boxes: Vec<Vec<(&str, usize)>> = vec![vec![]; 256];
 
-    input.split(',').for_each(|s| {
+    input.trim().split(',').for_each(|s| {
         let op = s.bytes().position(|b| !b.is_ascii_alphabetic()).unwrap();
         if s.as_bytes()[op] == b'=' {
             let (label, b, focal) = (
