@@ -15,6 +15,7 @@ fn main() {
             Duration::from_nanos(elapsed)
         )
     }
+    println!();
     println!("**Total: {:.2?}**", Duration::from_nanos(total));
 }
 
